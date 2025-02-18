@@ -76,7 +76,7 @@ fun ProfileHeader(userName:String, onClick:(String)->Unit){
 
 @Preview
 @Composable
-fun Preview() {
+private fun Preview() {
     RtspStreamerTheme {
         ProfileHeader(userName = "Rahim H") {
             

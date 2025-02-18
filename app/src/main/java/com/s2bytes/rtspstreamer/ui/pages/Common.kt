@@ -1,5 +1,7 @@
 package com.s2bytes.rtspstreamer.ui.pages
 
+import org.videolan.libvlc.util.VLCVideoLayout
+
 sealed class UiAction
 
 data class MainStates(
@@ -22,9 +24,12 @@ sealed class DrawerAct: UiAction() {
 }
 
 data class DashboardStates(
-    val summa: Boolean = false
+    val defVideoLink: String = ""
 )
 sealed class DashboardAct: UiAction() {
+    data class PlayFromUrl(val url: String): DashboardAct()
+    data class VideoViewCreated(val view: VLCVideoLayout): DashboardAct()
+    data object VideoViewDestroyed: DashboardAct()
 //    data object MenuButtonPrs: MainAct()
 //    data object MenuDrawerDismissed: MainAct()
 }

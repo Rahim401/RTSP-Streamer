@@ -1,13 +1,10 @@
 package com.s2bytes.rtspstreamer
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -18,9 +15,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.s2bytes.rtspstreamer.ui.pages.main.MainPage
 import com.s2bytes.rtspstreamer.ui.theme.RtspStreamerTheme
 import org.videolan.libvlc.LibVLC
+import org.videolan.libvlc.Media
+import org.videolan.libvlc.MediaPlayer
+import org.videolan.libvlc.util.VLCVideoLayout
 
 class MainActivity : ComponentActivity() {
     private lateinit var viewModel: MainVM
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)

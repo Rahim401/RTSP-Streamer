@@ -19,6 +19,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.s2bytes.rtspstreamer.ui.pages.MainAct
@@ -73,7 +74,13 @@ fun TopAppBarOld(
 @Composable
 fun TopAppBar(onAction: (UiAction) -> Unit = {}) {
     CenterAlignedTopAppBar(
-        title = { Text("RTSP Stream") },
+        title = {
+            Text(
+                "RTSP Stream",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+        },
         navigationIcon = {
             AppBarButton(Icons.Filled.Menu) { onAction(MainAct.MenuButtonPrs) }
         },
