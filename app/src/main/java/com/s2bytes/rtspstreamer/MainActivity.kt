@@ -6,27 +6,45 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
+import androidx.lifecycle.ViewModelProvider
+import com.s2bytes.rtspstreamer.ui.pages.main.MainPage
 import com.s2bytes.rtspstreamer.ui.theme.RtspStreamerTheme
+import org.videolan.libvlc.LibVLC
 
 class MainActivity : ComponentActivity() {
+    private lateinit var viewModel: MainVM
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        viewModel = ViewModelProvider(this)[MainVM::class.java]
+        val isFirstCreation = savedInstanceState?.getBoolean("isFirstTime") ?: true
+        if(isFirstCreation) viewModel.initializeModel(this)
+
         enableEdgeToEdge()
         setContent {
             RtspStreamerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MainPage(
+                    mainSt = viewModel.getMainStates(),
+                    drawerSt = viewModel.getDrawerStates(),
+                    dashboardSt = viewModel.getDashboardStates(),
+                    onAction = remember { { viewModel.handelAction(it, this) } }
+                )
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean("isFirstTime", false)
+        super.onSaveInstanceState(outState)
     }
 }
 

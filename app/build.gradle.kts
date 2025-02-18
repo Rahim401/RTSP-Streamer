@@ -58,7 +58,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-
+    implementation(libs.libvlc.all)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.kotlinx.collections.immutable)
+//    implementation(libs.jetbrains.kotlinx.collections.immutable)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
