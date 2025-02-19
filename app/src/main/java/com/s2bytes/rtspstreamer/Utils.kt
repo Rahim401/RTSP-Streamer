@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.annotation.StringRes
+import org.videolan.libvlc.Media
 
 fun Context.goToLink(link: String) {
     if(link.isBlank()) return
@@ -30,3 +31,6 @@ fun Context.makeToast(@StringRes message: Int, isShort:Boolean = true) = Toast.m
     if(isShort) Toast.LENGTH_SHORT
     else Toast.LENGTH_LONG
 ).show()
+
+fun <T> MutableList<T>.add(vararg values: T) = addAll(values)
+fun Media.addOptions(vararg options: String) = options.forEach { addOption(it) }

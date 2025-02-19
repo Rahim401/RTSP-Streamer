@@ -63,7 +63,10 @@ fun DrawerSheet(
             }
             ItemDivider()
 
-            DrawerItemCB("Force Streaming with TCP", drawerStates.isStreamingWithTCP){
+            DrawerItemCB("Optimize for Live", drawerStates.isOptimizedForLive) {
+                onAction(DrawerAct.OptimizeForLive(it))
+            }
+            DrawerItemCB("Stream using TCP", drawerStates.isStreamingWithTCP) {
                 onAction(DrawerAct.ForceUsingTCP(it))
             }
         }

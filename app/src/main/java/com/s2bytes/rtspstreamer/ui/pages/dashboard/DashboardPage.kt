@@ -32,18 +32,17 @@ fun DashboardPage(
 ) {
     val scrollState = rememberScrollState()
     Column(
-        modifier.padding().padding(15.dp)
+        modifier.padding().padding(horizontal = 15.dp)
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         UrlContainer(
-            Modifier.fillMaxWidth(),
+            Modifier.fillMaxWidth().padding(top = 15.dp),
             dashboardStates.defVideoLink, onAction
         )
         VideoContainer(
             Modifier.fillMaxWidth().height(300.dp),
-//            dashboardStates.defVideoLink,
-            onAction
+            dashboardStates, onAction
         )
     }
 }

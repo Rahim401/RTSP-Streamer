@@ -1,6 +1,5 @@
-package com.s2bytes.rtspstreamer
+package com.s2bytes.rtspstreamer.main
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,10 +13,6 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import com.s2bytes.rtspstreamer.ui.pages.main.MainPage
 import com.s2bytes.rtspstreamer.ui.theme.RtspStreamerTheme
-import org.videolan.libvlc.LibVLC
-import org.videolan.libvlc.Media
-import org.videolan.libvlc.MediaPlayer
-import org.videolan.libvlc.util.VLCVideoLayout
 
 class MainActivity : ComponentActivity() {
     private lateinit var viewModel: MainVM
