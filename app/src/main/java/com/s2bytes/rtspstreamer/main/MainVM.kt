@@ -2,11 +2,16 @@ package com.s2bytes.rtspstreamer.main
 
 import android.content.Context
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.s2bytes.rtspstreamer.application.MediaCallback
 import com.s2bytes.rtspstreamer.application.MediaManager
+import com.s2bytes.rtspstreamer.application.MediaManager.pause
+import com.s2bytes.rtspstreamer.application.MediaManager.play
+import com.s2bytes.rtspstreamer.application.MediaManager.playRtsp
+import com.s2bytes.rtspstreamer.application.MediaManager.stateNow
 import com.s2bytes.rtspstreamer.application.MediaState
 import com.s2bytes.rtspstreamer.application.Storage
 import com.s2bytes.rtspstreamer.goToLink
@@ -16,32 +21,36 @@ import com.s2bytes.rtspstreamer.ui.pages.DrawerAct
 import com.s2bytes.rtspstreamer.ui.pages.DrawerStates
 import com.s2bytes.rtspstreamer.ui.pages.MainAct
 import com.s2bytes.rtspstreamer.ui.pages.MainStates
+import com.s2bytes.rtspstreamer.ui.pages.ToastMessage
 import com.s2bytes.rtspstreamer.ui.pages.UiAction
-import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.MediaPlayer
-import org.videolan.libvlc.util.VLCUtil
 
 const val devName = "Rahim H"
-const val devGithubInLink = "https://x.com/acharya_ac_in"
-const val devLinkedInLink = "https://www.linkedin.com/school/acharya-institutes"
-const val devTwitterInLink = "https://x.com/acharya_ac_in"
+const val devGithubInLink = "https://github.com/rahim401"
+const val devLinkedInLink = "https://www.linkedin.com/in/hrahim401/"
+const val devTwitterInLink = "https://x.com"
 
 class MainVM: ViewModel() {
     private val mediaCallback = object: MediaCallback {
+        private var isPrevIdle = false
         override fun onStateChange(from: MediaState?, to: MediaState?) {
-            println("$from -> $to")
             playbackState = to ?: MediaState.Uninitialized
+            if(from == MediaState.Connecting && to == MediaState.Idle)
+                toastToMake = ToastMessage("Stream Unavailable!")
+            if(isPrevIdle && from == MediaState.Connecting && to == MediaState.Playing) {
+                Storage.noPrevStreams = noOfPrevStreams++
+            }
+            isPrevIdle = from == MediaState.Idle
+//            println("$from -> $to")
         }
-
-        override fun onEvent(event: MediaPlayer.Event) {
-//            println("${event.type.toHexString().substring(5)} ${event.timeChanged}")
-        }
+        override fun onEvent(event: MediaPlayer.Event) {}
     }
     fun initializeModel(context: Context) {
         MediaManager.configure(context, isForcedToUseTcp, isOptimizedForLive)
         MediaManager.addCallback(mediaCallback)
     }
 
+    private var toastToMake by mutableStateOf<ToastMessage?>(null)
     private var playbackState by mutableStateOf(MediaState.Uninitialized)
     private var currentVideoLink by mutableStateOf(Storage.lastLink)
     private fun handelDashboardAction(action: DashboardAct) {
@@ -54,11 +63,17 @@ class MainVM: ViewModel() {
             }
             is DashboardAct.VideoViewCreated -> MediaManager.attachView(action.view)
             DashboardAct.VideoViewDestroyed -> MediaManager.detachViews()
-            DashboardAct.PauseOrPlayedVideo -> MediaManager.pauseOrPlay()
+            DashboardAct.PauseOrPlayedVideo -> when(stateNow) {
+                MediaState.Playing -> pause()
+                MediaState.Paused -> play()
+                MediaState.Idle -> playRtsp(currentVideoLink)
+                else -> {}
+            }
             DashboardAct.StopVideo -> MediaManager.stop()
         }
     }
 
+    private var noOfPrevStreams by mutableIntStateOf(Storage.noPrevStreams)
     private var isForcedToUseTcp by mutableStateOf(Storage.useTcp)
     private var isOptimizedForLive by mutableStateOf(Storage.forLive)
     private fun handelDrawerAction(action: DrawerAct, context: Context? = null) {
@@ -84,7 +99,7 @@ class MainVM: ViewModel() {
     }
 
     fun handelAction(action: UiAction, context: Context? = null) {
-        println("Handling action $action")
+//        println("Handling action $action")
         when(action) {
             is MainAct -> {}
             is DrawerAct -> handelDrawerAction(action, context)
@@ -98,7 +113,7 @@ class MainVM: ViewModel() {
         MediaManager.release()
     }
 
-    fun getMainStates() = MainStates()
-    fun getDrawerStates() = DrawerStates(devName, 0, isForcedToUseTcp, isOptimizedForLive)
+    fun getMainStates() = MainStates(toastToMake)
+    fun getDrawerStates() = DrawerStates(devName, noOfPrevStreams, isForcedToUseTcp, isOptimizedForLive)
     fun getDashboardStates() = DashboardStates(currentVideoLink, playbackState)
 }

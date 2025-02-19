@@ -58,7 +58,7 @@ fun DrawerSheet(
                 )
             }
 
-            DrawerItem("This is Stream No: ${drawerStates.noOfThisStreams}") {
+            DrawerItem("No of Prev Streams: ${drawerStates.noOfThisStreams}") {
                 onAction(DrawerAct.NoOfStreamPrs)
             }
             ItemDivider()
@@ -73,7 +73,7 @@ fun DrawerSheet(
 //        Spacer(modifier = Modifier.fillMaxSize())
         Box(modifier = Modifier.fillMaxSize()) {
             Text(
-                text = "Built with LibVLC\nFor Vecros Assignment\n",
+                text = "Built with LibVLC\nFor VECROS Assignment\n",
                 style = MaterialTheme.typography.labelMedium,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurface.copy(0.8f),

@@ -1,12 +1,39 @@
 package com.s2bytes.rtspstreamer.ui.pages
 
+import android.content.Context
 import com.s2bytes.rtspstreamer.application.MediaState
+import com.s2bytes.rtspstreamer.makeToast
 import org.videolan.libvlc.util.VLCVideoLayout
 
 sealed class UiAction
 
+data class ToastMessage(val message: String) {
+    val id: Int = getCount()
+    private var isDone = false
+    fun make(context: Context) {
+        if(!isDone) {
+            context.makeToast(message)
+            isDone = true
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is ToastMessage && other.id == id
+    }
+
+    override fun hashCode(): Int {
+        return id
+    }
+
+    companion object {
+        private var idCount = 0
+        private fun getCount(): Int {
+            return idCount++
+        }
+    }
+}
 data class MainStates(
-    val isDrawerOpen: Boolean = false
+    val showToast: ToastMessage? = null
 )
 sealed class MainAct: UiAction() {
     data object MenuButtonPrs: MainAct()

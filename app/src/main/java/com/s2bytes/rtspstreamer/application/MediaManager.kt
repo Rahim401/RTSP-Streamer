@@ -11,7 +11,6 @@ import org.videolan.libvlc.LibVLC
 import org.videolan.libvlc.Media
 import org.videolan.libvlc.MediaPlayer
 import org.videolan.libvlc.MediaPlayer.Event
-import org.videolan.libvlc.util.VLCUtil
 import org.videolan.libvlc.util.VLCVideoLayout
 import java.lang.ref.WeakReference
 
@@ -36,11 +35,11 @@ object MediaManager {
             Event.Opening -> stateNow = MediaState.Connecting
             Event.Playing -> stateNow = MediaState.Playing
             Event.Paused -> stateNow = MediaState.Paused
-            Event.EndReached, Event.Stopped -> stateNow = MediaState.Idle
-//            Event.Buffering -> {
-//                println("Buffered: ${event.buffering}")
-//
-//            }
+            Event.Stopped -> stateNow = MediaState.Idle
+            Event.EndReached -> {
+                retryConnecting = false
+                stateNow = MediaState.Idle
+            }
         }
         uiScope.launch { stateChangeCBs.forEach { it.onEvent(event) } }
     }
@@ -49,8 +48,7 @@ object MediaManager {
     private var useTcpToStream: Boolean = false;
     private var optimizeForLive: Boolean = true;
     private var lastPlayedLink: String? = null
-    private var isMediaStreaming = false
-    private var bufferSize = 0
+    private var retryConnecting = false
     var stateNow: MediaState = MediaState.Uninitialized
         private set(value) {
             if(value == field) return; val old = field; field = value
@@ -100,6 +98,7 @@ object MediaManager {
         return this
     }
     private fun tryToPlay() = ifReady {
+        if(!retryConnecting) return@ifReady
         val link = lastPlayedLink ?: return@ifReady
         val uri = Uri.parse(link)
         val media = Media(vlcLib, uri).configure()
@@ -116,7 +115,7 @@ object MediaManager {
     fun playRtsp(link: String? = lastPlayedLink) = ifReady {
         if(vlcPlayer.isPlaying) stop()
         lastPlayedLink = link
-        isMediaStreaming = true
+        retryConnecting = true
         tryToPlay()
     }
     fun play() = ifReady { vlcPlayer.play() }
@@ -130,8 +129,8 @@ object MediaManager {
         }
     }
     fun stop() = ifReady {
+        retryConnecting = false
         vlcPlayer.stop()
-        isMediaStreaming = false
     }
 
     fun release() = ifReady {

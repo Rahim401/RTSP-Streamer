@@ -15,6 +15,9 @@ object Storage {
     var forLive: Boolean
         get() = preference.getBoolean("forLive", true)
         set(value) = preference.edit(true) { putBoolean("forLive", value) }
+    var noPrevStreams: Int
+        get() = preference.getInt("noPrevStreams", 0)
+        set(value) = preference.edit(true) { putInt("noPrevStreams", value) }
 
     fun initialize(context: Context) {
         preference = context.getSharedPreferences("Storage", Context.MODE_PRIVATE)
